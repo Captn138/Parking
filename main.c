@@ -4,6 +4,7 @@
 #include <termios.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <string.h>
 #include "car.h"
 
 double PRICE_PER_TICK = 4.20;
@@ -94,10 +95,11 @@ void afficheplan(FILE* f, double topay){
 	//prints the visual map and the price to pay
 	clear();
 	char s[200] = "";
-	while(fgets(s, 200, f) != NULL){
+	while(strcmp(s, "aaa") != 0){
 		printf("%s", s);
+		fgets(s, 200, f);
 	}
-	//gotoxy(3, 62);
+	gotoxy(3, 62);
 	printf("%.2lf", topay); //print the amount to pay
 }
 
@@ -138,10 +140,10 @@ char key_pressed(){ //returns 0 or the key pressed
 void gameon(int** matrix, int nblin, int nbcol, nodec* cars, int startlin, int startcol){
 	int nbcars = 0; //number of cars in the parking
 	int cardelay = 20; //variable delay in "ticks" between two cars entering the parking
-	FILE* plan = fopen("plan.txt", "r"); //visual map of the paking
+	FILE* plan = fopen("plan.txt", "r"); //visual map of the parking
 	nodec* tempnode; //temporary list to process the changes
 	double topay = 0; //variable to print the amount of money to pay
-	while(1){ //exits the game if we press 'q'
+	while(1){
 	sleep(0.1);
 		if(cardelay == 20){ //if we reached the delay, fixed here at 20
 			cars = addnode(cars, startlin, startcol, 2); //we add a new car in the parking
