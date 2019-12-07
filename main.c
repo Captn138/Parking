@@ -9,7 +9,7 @@
 double PRICE_PER_TICK = 4.20;
 
 #define clear() printf("\033[H\033[J") //simple function to clear the screen
-#define gotoxy(lin,col) printf("\033[%d;%dH", (lin), (col)) //simple function to go to coordinates on the screen
+#define gotoxy(lin,col) printf("\033[%d;%dH", lin, col) //simple function to go to coordinates on the screen
 
 int** initmatrix(){
 	//initialises the matrix
@@ -93,13 +93,11 @@ void printcar(nodec* mycar){
 void afficheplan(FILE* f, double topay){
 	//prints the visual map and the price to pay
 	clear();
-	char c;
-	fscanf(f, "%c", &c);
-	while(c != EOF){ //print all the characters of the visual map
-		printf("%c", c);
-		fscanf(f, "%c", &c);
+	char s[200] = "";
+	while(fgets(s, 200, f) != NULL){
+		printf("%s", s);
 	}
-	gotoxy(3, 62);
+	//gotoxy(3, 62);
 	printf("%.2lf", topay); //print the amount to pay
 }
 
@@ -143,9 +141,11 @@ void gameon(int** matrix, int nblin, int nbcol, nodec* cars, int startlin, int s
 	FILE* plan = fopen("plan.txt", "r"); //visual map of the paking
 	nodec* tempnode; //temporary list to process the changes
 	double topay = 0; //variable to print the amount of money to pay
-	while(key_pressed() != 'q'){ //exits the game if we press 'q'
+	while(1){ //exits the game if we press 'q'
+	sleep(0.1);
 		if(cardelay == 20){ //if we reached the delay, fixed here at 20
 			cars = addnode(cars, startlin, startcol, 2); //we add a new car in the parking
+			printf("done!");
 			cardelay = 0; //reset the delay
 			nbcars++; //and increment the counter of cars
 		}else{
@@ -177,6 +177,7 @@ void gameon(int** matrix, int nblin, int nbcol, nodec* cars, int startlin, int s
 				}
 			}
 			printcar(tempnode);
+			printf("allo");
 			tempnode = tempnode->next;
 		}
 	}
