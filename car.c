@@ -184,7 +184,7 @@ void carexit(nodec* mynode, int** matrix){
                 }else{
                     matrix[lin][col] = 0;
                 }
-            }else if(matrix[lin+4][col]){
+            }else if(matrix[lin+4][col] != 6){
                 flag = 1;
                 mynode->dir = tempdir;
                 matrix[lin+1][col] = 2;
