@@ -197,7 +197,7 @@ void gameon(int** matrix, nodec* cars, int startlin, int startcol){
 			tempnode = tempnode->next;
 			balise:
 			gotoxy(19,0);
-			printf("Ttoal money earned: %.2Lf €\n", totalpay);
+			printf("Total money earned: %.2Lf €\n", totalpay);
 		}
 	}
 }
