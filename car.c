@@ -11,7 +11,7 @@ nodec* addnode(nodec* list, int lin, int col, int dir){
     newnode->col = col;
     newnode->dir = dir;
     newnode->t = 0;
-    newnode->TIME = (rand()%90)+10;
+    newnode->TIME = (rand()%20)+0;
     newnode->status = 0;
     nodec* temp = list;
     if(list == NULL){
@@ -48,9 +48,11 @@ void cardir(nodec* mynode, int** matrix){
     int tempdir = rand()%4; //chooses a random direction
     int lin = mynode->lin;
     int col = mynode->col;
-    while(flag == 0){ //while the direction is not approved
+    int try = 0;
+    while(flag == 0 && try < 4){ //while the direction is not approved
         tempdir = (tempdir+1)%4;
-        if(tempdir == 0 && tempdir != (mynode->dir+2)%4 && matrix[lin-1][col] == 0&& matrix[lin-1][col] != 2){
+        try++;
+        if(tempdir == 0 && tempdir != (mynode->dir+2)%4 && matrix[lin-1][col] == 0 && matrix[lin-1][col] != 2){
             //if tempdir=up and the car won't do a 180° and there in a path in this direction and there is no car in the next case
             flag = 1; //say we approve this direction
             mynode->dir = tempdir; //change the actual direction of the car
@@ -62,7 +64,7 @@ void cardir(nodec* mynode, int** matrix){
             }else{
                 matrix[lin][col] = 0;
             }
-        }else if(tempdir == 1 && tempdir != (mynode->dir+2)%4 && matrix[lin][col+1] == 0&& matrix[lin][col+1] != 2){
+        }else if(tempdir == 1 && tempdir != (mynode->dir+2)%4 && matrix[lin][col+1] == 0 && matrix[lin][col+1] != 2){
             //if tempdir=right and the car won't do a 180° and there in a path in this direction and there is no car in the next case
             flag = 1;
             mynode->dir = tempdir;
@@ -74,7 +76,7 @@ void cardir(nodec* mynode, int** matrix){
             }else{
                 matrix[lin][col] = 0;
             }
-        }else if(tempdir == 2 && tempdir != (mynode->dir+2)%4 && matrix[lin+1][col] == 0 && matrix[lin+1][col] != 2){
+        }else if(tempdir == 2 && tempdir != (mynode->dir+2)%4 && (matrix[lin+1][col] == 0 || matrix[lin+1][col] == 4) && matrix[lin+1][col] != 2){
             //if tempdir=down and the car won't do a 180° and there in a path in this direction and there is no car in the next case
             flag = 1;
             mynode->dir = tempdir;
@@ -86,7 +88,7 @@ void cardir(nodec* mynode, int** matrix){
             }else{
                 matrix[lin][col] = 0;
             }
-        }else if(tempdir == 3 && tempdir != (mynode->dir+2)%4 && (matrix[lin][col-1] == 0 || matrix[lin][col-1] == 4) && matrix[lin][col-1] != 2){
+        }else if(tempdir == 3 && tempdir != (mynode->dir+2)%4 && matrix[lin][col-1] == 0 && matrix[lin][col-1] != 2){
             //if tempdir=left and the car won't do a 180° and there in a path in this direction and there is no car in the next case
             flag = 1;
             mynode->dir = tempdir;
@@ -100,6 +102,25 @@ void cardir(nodec* mynode, int** matrix){
             }
         }
     }
+    if(try ==4 && flag == 0){
+        mynode->dir = (mynode->dir + 2)%4;
+        if(mynode->dir == 0){
+            matrix[lin-1][col] = 2;
+        }else if(mynode->dir == 1){
+            matrix[lin][col+1] = 2;
+        }else if(mynode->dir == 2){
+            matrix[lin+1][col] = 2;
+        }else if(mynode->dir == 3){
+            matrix[lin][col-1] = 2;
+        }
+        if(lin == 5 && col == 2){
+            matrix[lin][col] = 4;
+        }else if(lin == 5 && col == 74){
+            matrix[lin][col] = 5;
+        }else{
+            matrix[lin][col] = 0;
+        }
+    }
 }
 
 void carexit(nodec* mynode, int** matrix){
@@ -109,10 +130,12 @@ void carexit(nodec* mynode, int** matrix){
     int tempdir = rand()%4; //chooses a random direction
     int lin = mynode->lin;
     int col = mynode->col;
-    while(flag == 0){ //while the direction is not approved
+    int try = 0;
+    while(flag == 0 && try<4){ //while the direction is not approved
         tempdir = (tempdir+1)%4;
+        try++;
         if(tempdir == 0 && tempdir != (mynode->dir+2)%4 && (matrix[lin-1][col] == 0 || matrix[lin-1][col] == 5) && matrix[lin-1][col] != 2){
-            //if tempdir=up and the car won't do a 180° and there in a path in this direction and there is no car in the 3 next cases and there is no wall 3 cases later
+            //if tempdir=up and the car won't do a 180° and there in a path in this direction and there is no car in the next case and there is no wall 3 cases later
             if(lin<4){
                 flag = 1; //say we approve the direction
                 mynode->dir = tempdir; //change the actual direction of the car
@@ -137,7 +160,7 @@ void carexit(nodec* mynode, int** matrix){
                 }
             }
         }else if(tempdir == 1 && tempdir != (mynode->dir+2)%4 && matrix[lin][col+1] == 0 && matrix[lin][col+1] != 2){
-            //if tempdir=right and the car won't do a 180° and there in a path in this direction and there is no car in the 3 next cases and there is no wall 3 cases later
+            //if tempdir=right and the car won't do a 180° and there in a path in this direction and there is no car in the next case and there is no wall 3 cases later
             flag = 1;
             mynode->dir = tempdir;
             matrix[lin][col+1] = 2;
@@ -149,23 +172,11 @@ void carexit(nodec* mynode, int** matrix){
                 matrix[lin][col] = 0;
             }
         }else if(tempdir == 2 && tempdir != (mynode->dir+2)%4 && matrix[lin+1][col] == 0 && matrix[lin+1][col] != 2){
-            //if tempdir=down and the car won't do a 180° and there in a path in this direction and there is no car in the 3 next cases and there is no wall 3 cases later
-            flag = 1;
-            mynode->dir = tempdir;
-            matrix[lin+1][col] = 2;
-            if(lin == 5 && col == 2){
-                matrix[lin][col] = 4;
-            }else if(lin == 5 && col == 74){
-                matrix[lin][col] = 5;
-            }else{
-                matrix[lin][col] = 0;
-            }
-        }else if(tempdir == 3 && tempdir != (mynode->dir+2)%4 && matrix[lin][col-1] == 0 && matrix[lin][col-1] != 2){
-            //if tempdir=left and the car won't do a 180° and there in a path in this direction and there is no car in the 3 next cases and there is no wall 3 cases later
+            //if tempdir=down and the car won't do a 180° and there in a path in this direction and there is no car in the next case and there is no wall 3 cases later
             if(lin>13){
                 flag = 1;
                 mynode->dir = tempdir;
-                matrix[lin][col-1] = 2;
+                matrix[lin+1][col] = 2;
                 if(lin == 5 && col == 2){
                     matrix[lin][col] = 4;
                 }else if(lin == 5 && col == 74){
@@ -176,7 +187,7 @@ void carexit(nodec* mynode, int** matrix){
             }else if(matrix[lin+4][col] != 6){
                 flag = 1;
                 mynode->dir = tempdir;
-                matrix[lin][col-1] = 2;
+                matrix[lin+1][col] = 2;
                 if(lin == 5 && col == 2){
                     matrix[lin][col] = 4;
                 }else if(lin == 5 && col == 74){
@@ -185,6 +196,37 @@ void carexit(nodec* mynode, int** matrix){
                     matrix[lin][col] = 0;
                 }
             }
+        }else if(tempdir == 3 && tempdir != (mynode->dir+2)%4 && matrix[lin][col-1] == 0 && matrix[lin][col-1] != 2){
+            //if tempdir=left and the car won't do a 180° and there in a path in this direction and there is no car in the next case and there is no wall 3 cases later
+            flag = 1;
+            mynode->dir = tempdir;
+            matrix[lin][col-1] = 2;
+            if(lin == 5 && col == 2){
+                matrix[lin][col] = 4;
+            }else if(lin == 5 && col == 74){
+                matrix[lin][col] = 5;
+            }else{
+                matrix[lin][col] = 0;
+            }
+        }
+    }
+    if(try >=4 && flag == 0){
+        mynode->dir = (mynode->dir + 2)%4;
+        if(mynode->dir == 0){
+            matrix[lin-1][col] = 2;
+        }else if(mynode->dir == 1){
+            matrix[lin][col+1] = 2;
+        }else if(mynode->dir == 2){
+            matrix[lin+1][col] = 2;
+        }else if(mynode->dir == 3){
+            matrix[lin][col-1] = 2;
+        }
+        if(lin == 5 && col == 2){
+            matrix[lin][col] = 4;
+        }else if(lin == 5 && col == 74){
+            matrix[lin][col] = 5;
+        }else{
+            matrix[lin][col] = 0;
         }
     }
 }

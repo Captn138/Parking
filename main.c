@@ -5,18 +5,16 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
-#include <ncurses.h>
 #include "car.h"
-#include "gui.h"
 
 double PRICE_PER_TICK = 4.20;
 
-//#define clear() printf("\033[H\033[J") //simple function to clear the screen
-#define gotoxy(lin,col) printw("\033[%d;%dH", lin, col) //simple function to go to coordinates on the screen
+#define clear() printf("\033[H\033[J") //simple function to clear the screen
+#define gotoxy(lin,col) printf("\033[%d;%dH", lin, col) //simple function to go to coordinates on the screen
 
 int** initmatrix(){
 	//initialises the matrix
-	int c;
+	char c;
 	FILE* f = fopen("planchiffre.txt", "r");
 	int** matrix = malloc(18*sizeof(int*)); // allocate the memory space for the rown
 	for(int i=0; i<18; i++){
@@ -24,9 +22,17 @@ int** initmatrix(){
 	}
 	for(int i=0; i<18; i++){
 		for(int l=0; l<77; l++){
-			fscanf(f, "%d", &c);
-			matrix[i][l] = c; //attribute to the matrix the values stored in the file
+			fscanf(f, "%c", &c);
+			if(c == '\n'){
+				fscanf(f, "%c", &c);
+				fscanf(f, "%c", &c);
+			}
+			matrix[i][l] = atoi(&c); //attribute to the matrix the values stored in the file
 		}
+	}
+	//tricky thing
+	for(int i=0; i<18; i++){
+		matrix[i][0] = 1;
 	}
 	fclose(f);
 	return matrix;
@@ -39,54 +45,54 @@ void printcar(nodec* mycar){
 		char c;
 		gotoxy(mycar->lin, mycar->col);
 		fscanf(f, "%c", &c);
-		printw("%c", c);
+		printf("%c", c);
 		fscanf(f, "%c", &c);
-		printw("%c", c);
+		printf("%c", c);
 		gotoxy(mycar->lin+1, mycar->col);
 		fscanf(f, "%c", &c);
-		printw("%c", c);
+		printf("%c", c);
 		fscanf(f, "%c", &c);
-		printw("%c", c);
+		printf("%c", c);
 		fclose(f);
 	}else if(mycar->dir == 1){
 		FILE* f = fopen("1", "r");
 		char c;
 		gotoxy(mycar->lin, mycar->col-1);
 		fscanf(f, "%c", &c);
-		printw("%c", c);
+		printf("%c", c);
 		fscanf(f, "%c", &c);
-		printw("%c", c);
+		printf("%c", c);
 		gotoxy(mycar->lin+1, mycar->col-1);
 		fscanf(f, "%c", &c);
-		printw("%c", c);
+		printf("%c", c);
 		fscanf(f, "%c", &c);
-		printw("%c", c);
+		printf("%c", c);
 		fclose(f);
 	}else if(mycar->dir == 2){
 		FILE* f = fopen("2", "r");
 		char c;
 		gotoxy(mycar->lin-1, mycar->col-1);
 		fscanf(f, "%c", &c);
-		printw("%c", c);
+		printf("%c", c);
 		fscanf(f, "%c", &c);
-		printw("%c", c);
+		printf("%c", c);
 		gotoxy(mycar->lin, mycar->col-1);
 		fscanf(f, "%c", &c);
-		printw("%c", c);
+		printf("%c", c);
 		fscanf(f, "%c", &c);
-		printw("%c", c);
+		printf("%c", c);
 		fclose(f);
 	}else{
 		FILE* f = fopen("3", "r");
 		char c;
 		gotoxy(mycar->lin-1, mycar->col);
 		fscanf(f, "%c", &c);
-		printw("%c", c);
+		printf("%c", c);
 		fscanf(f, "%c", &c);
-		printw("%c", c);
+		printf("%c", c);
 		gotoxy(mycar->lin, mycar->col);
 		fscanf(f, "%c", &c);
-		printw("%c", c);
+		printf("%c", c);
 		fscanf(f, "%c", &c);
 		printf("%c", c);
 		fclose(f);
@@ -96,20 +102,58 @@ void printcar(nodec* mycar){
 /*void afficheplan(FILE* f, double topay){
 	//prints the visual map and the price to pay
 	clear();
-	char s[200] = "";
-	while(strcmp(s, "aaa") != 0){
-		printf("%s", s);
-		fgets(s, 200, f);
+	char c;
+	while(c != EOF){
+		printf("%c", c);
+		fscanf(f, "%c", &c);
 	}
 	gotoxy(3, 62);
 	printf("%.2lf", topay); //print the amount to pay
 }*/
 
-void affichematrix(char** matrix){ //debug function
-	printf("%c[2J", 0x1B);
-	for(int i=0; i<43; i++){
-		for(int l=0; l<93; l++){
-			if(matrix[i][l]=='8'){
+void afficheplan(FILE* f, double topay){
+  clear();
+  int i=0;
+  char c;
+  fscanf(f, "%c", &c);
+  while(i<1417){
+    if(c == '0'){
+      printf("╓");
+    }else if(c == '1'){
+      printf("╌");
+    }else if(c == '2'){
+      printf("╖");
+    }else if(c == '3'){
+      printf("║");
+    }else if(c == '4'){
+      printf("╟");
+    }else if(c == '5'){
+      printf("╚");
+    }else if(c == '6'){
+      printf("═");
+    }else if(c == '7'){
+      printf("╝");
+    }else if(c == '8'){
+      printf("╢");
+    }else if(c == '9'){
+      printf("╫");
+    }else if(c == 'w'){
+      printf("%.2lf", topay);
+	}else if(c == 'b'){
+		printf("à");
+    }else{
+      printf("%c", c);
+    }
+    fscanf(f, "%c", &c);
+	i++;
+  }
+}
+
+void affichematrix(int** matrix){ //debug function
+	clear();
+	for(int i=0; i<18; i++){
+		for(int l=0; l<77; l++){
+			if(matrix[i][l]==8 || matrix[i][l]==0){
 				printf(" ");
 			}else{
 				printf("%d", matrix[i][l]);
@@ -141,13 +185,14 @@ char key_pressed(){ //returns 0 or the key pressed
 
 void gameon(int** matrix, int nblin, int nbcol, nodec* cars, int startlin, int startcol){
 	int nbcars = 0; //number of cars in the parking
-	int cardelay = 20; //variable delay in "ticks" between two cars entering the parking
+	int MAXCARDELAY = 2000;
+	int cardelay = MAXCARDELAY; //variable delay in "ticks" between two cars entering the parking
 	FILE* plan = fopen("plan2.txt", "r"); //visual map of the parking
 	nodec* tempnode; //temporary list to process the changes
 	double topay = 0; //variable to print the amount of money to pay
 	while(1){
-	sleep(0.1);
-		if(cardelay == 20){ //if we reached the delay, fixed here at 20
+	sleep(1);
+		if(cardelay == MAXCARDELAY){ //if we reached the delay, fixed here at 20
 			cars = addnode(cars, startlin, startcol, 2); //we add a new car in the parking
 			cardelay = 0; //reset the delay
 			nbcars++; //and increment the counter of cars
@@ -156,7 +201,8 @@ void gameon(int** matrix, int nblin, int nbcol, nodec* cars, int startlin, int s
 		}
 		tempnode = cars;
 		//every tick, we will have to print the actualized map with the cars moving
-		afficheplan(plan, topay); //we first print the map
+		affichematrix(matrix);
+		//afficheplan(plan, topay); //we first print the map
 		for(int i=0; i<nbcars; i++){ //for every car in the parking,
 			if(tempnode->status == 0){ // •if the car is searching for a parking spot
 				cardir(tempnode, matrix); //make it find a direction
@@ -170,8 +216,14 @@ void gameon(int** matrix, int nblin, int nbcol, nodec* cars, int startlin, int s
 					tempnode->status = 2; //and changes the status
 				}
 			}else if(tempnode->status == 2){ // •if the car is leaving
-				if(matrix[tempnode->lin][tempnode->col] == 3){ //if the car reached the exit
+				if(tempnode->lin == 6 && tempnode->col == 74){
+					tempnode->dir = 0;
+					matrix[tempnode->lin-1][tempnode->col] = 2;
+					matrix[tempnode->lin][tempnode->col] = 0;
+					carmove(tempnode);
+				}else if(tempnode->lin == 1 && tempnode->col == 74){ //if the car reached the exit
 					topay = pay(PRICE_PER_TICK, tempnode); //make it pay
+					matrix[tempnode->lin][tempnode->col] = 0;
 					removenode(cars, tempnode); //get it out
 					nbcars--; //and decrement the counter
 				}else{
@@ -179,7 +231,7 @@ void gameon(int** matrix, int nblin, int nbcol, nodec* cars, int startlin, int s
 					carmove(tempnode); //and update its position
 				}
 			}
-			printcar(tempnode);
+			//printcar(tempnode);
 			tempnode = tempnode->next;
 		}
 	}
@@ -189,9 +241,9 @@ void gameon(int** matrix, int nblin, int nbcol, nodec* cars, int startlin, int s
 int main(){
 	int** matrix = initmatrix(); // initialise the game matrix
 	nodec* cars = NULL; //set the list of cars to NULL
-	ncurses_initialiser();
-	ncurses_couleurs();
-	attron(COLOR_PAIR(1));
+	//ncurses_initialiser();
+	//ncurses_couleurs();
+	//attron(COLOR_PAIR(1));
 	gameon(matrix, 43, 93, cars, 1, 2); //launch the game
 	return 0;
 }
