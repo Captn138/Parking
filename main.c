@@ -9,6 +9,15 @@ double PRICE_PER_TICK = 4.20;
 #define clear() printf("\033[H\033[J") //simple function to clear the screen
 #define gotoxy(lin,col) printf("\033[%d;%dH", lin, col) //simple function to go to coordinates on the screen
 
+void delay(int milliseconds){ //delay function
+    long pause;
+    clock_t now,then;
+    pause = milliseconds*(CLOCKS_PER_SEC/1000);
+    now = then = clock();
+    while( (now-then) < pause )
+        now = clock();
+}
+
 int** initmatrix(){
 	//initialises the matrix
 	char c;
@@ -160,7 +169,7 @@ void affichematrix(int** matrix){ //debug function
 	}
 }
 
-void gameon(int** matrix, int nblin, int nbcol, nodec* cars, int startlin, int startcol){
+void gameon(int** matrix, nodec* cars, int startlin, int startcol){
 	int nbcars = 0; //number of cars in the parking
 	int MAXCARDELAY = 2000;
 	int cardelay = MAXCARDELAY; //variable delay in "ticks" between two cars entering the parking
@@ -168,7 +177,7 @@ void gameon(int** matrix, int nblin, int nbcol, nodec* cars, int startlin, int s
 	nodec* tempnode; //temporary list to process the changes
 	double topay = 0; //variable to print the amount of money to pay
 	while(1){
-	sleep(1);
+	delay(1000);
 		if(cardelay == MAXCARDELAY){ //if we reached the delay, fixed here at 20
 			cars = addnode(cars, startlin, startcol, 2); //we add a new car in the parking
 			cardelay = 0; //reset the delay
@@ -218,6 +227,6 @@ void gameon(int** matrix, int nblin, int nbcol, nodec* cars, int startlin, int s
 int main(){
 	int** matrix = initmatrix(); // initialise the game matrix
 	nodec* cars = NULL; //set the list of cars to NULL
-	gameon(matrix, 43, 93, cars, 1, 2); //launch the game
+	gameon(matrix, cars, 1, 2); //launch the game
 	return 0;
 }
