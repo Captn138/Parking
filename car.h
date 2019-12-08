@@ -6,6 +6,7 @@ typedef struct nodec{
     int t; //counter of the time the cas has been parked
     int TIME; //random variable of the time the car will stay parked
     int status; //0:searching, 1:parked, 2:leaving
+    long int id;
 } nodec;
 
 nodec* addnode(nodec* list, int x, int y, int dir);

@@ -5,7 +5,7 @@
 #include "car.h"
 
 double PRICE_PER_TICK = 4.20;
-int MAXCARDELAY = 2000;
+int MAXCARDELAY = 20;
 char* RED = "\033[0;31m";
 char* RESET = "\033[0m";
 
@@ -99,10 +99,12 @@ void afficheplan(FILE* f, double topay){
     }else if(c == '9'){
       printf("╫");
     }else if(c == 'w'){
-		if(topay>10){
+		if(topay>=100){
 			printf("%.2lf", topay);
-		}else{
+		}else if(topay>=10){
 			printf("%.2lf ", topay);
+		}else{
+			printf("%.2lf  ", topay);
 		}
 	}else if(c == 'b'){
 		printf("à");
@@ -136,6 +138,7 @@ void gameon(int** matrix, nodec* cars, int startlin, int startcol){
 	int cardelay = MAXCARDELAY; //variable delay in "ticks" between two cars entering the parking
 	nodec* tempnode; //temporary list to process the changes
 	double topay = 0; //variable to print the amount of money to pay
+	long double totalpay = 0;
 	while(1){
 	delay(200);
 		if(cardelay == MAXCARDELAY){ //if we reached the delay, fixed here at 20
@@ -178,9 +181,13 @@ void gameon(int** matrix, nodec* cars, int startlin, int startcol){
 					carmove(tempnode);
 				}else if(tempnode->lin == 1 && tempnode->col == 74){ //if the car reached the exit
 					topay = pay(PRICE_PER_TICK, tempnode); //make it pay
-					matrix[tempnode->lin][tempnode->col] = 0;
-					removenode(cars, tempnode); //get it out
+					totalpay += topay;
+					matrix[1][74] = 0;
+					nodec* anothertemp = tempnode->next;
+					cars = removenode(cars, tempnode); //get it out
 					nbcars--; //and decrement the counter
+					tempnode = anothertemp;
+					goto balise;
 				}else{
 					carexit(tempnode, matrix); //else make if find the way to the exit
 					carmove(tempnode); //and update its position
@@ -188,6 +195,9 @@ void gameon(int** matrix, nodec* cars, int startlin, int startcol){
 			}
 			printcar(tempnode);
 			tempnode = tempnode->next;
+			balise:
+			gotoxy(19,0);
+			printf("Ttoal money earned: %.2Lf €\n", totalpay);
 		}
 	}
 }

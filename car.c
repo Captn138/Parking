@@ -11,7 +11,7 @@ nodec* addnode(nodec* list, int lin, int col, int dir){
     newnode->col = col;
     newnode->dir = dir;
     newnode->t = 0;
-    newnode->TIME = (rand()%20)+0;
+    newnode->TIME = (rand()%20)+(rand()%20);
     newnode->status = 0;
     nodec* temp = list;
     if(list == NULL){
