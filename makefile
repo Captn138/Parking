@@ -14,3 +14,6 @@ execute: exec
 
 clean:
 	rm *.o exec
+
+install:
+	sudo apt-get install gcc ttf-ancient-fonts
